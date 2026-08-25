@@ -49,6 +49,8 @@ func key(m *Model, s string) {
 		k = tea.KeyMsg{Type: tea.KeyTab}
 	case "ctrl+s":
 		k = tea.KeyMsg{Type: tea.KeyCtrlS}
+	case "alt+enter":
+		k = tea.KeyMsg{Type: tea.KeyEnter, Alt: true}
 	case "ctrl+d":
 		k = tea.KeyMsg{Type: tea.KeyCtrlD}
 	case "ctrl+u":
@@ -457,5 +459,53 @@ func TestTabCyclesNotesWithinBlock(t *testing.T) {
 	key(m, "tab")
 	if m.selectedNoteID() != first {
 		t.Error("tab did not wrap back to the first note")
+	}
+}
+
+// cmd+return is delivered as alt+enter via a terminal keybind, so the composer
+// must save on it as well as on ctrl+s.
+func TestAltEnterSavesComment(t *testing.T) {
+	dir := t.TempDir()
+	path := dir + "/d.md"
+	if err := writeFile(path, "# T\n\nBody.\n"); err != nil {
+		t.Fatal(err)
+	}
+	m, store := newModel(t, path)
+	key(m, "j")
+	key(m, "c")
+	typeText(m, "saved with cmd+return")
+	key(m, "alt+enter")
+
+	if m.mode != ModeNormal {
+		t.Error("alt+enter did not close the composer")
+	}
+	if len(store.Notes) != 1 || store.Notes[0].Body != "saved with cmd+return" {
+		t.Fatalf("alt+enter did not save: %+v", store.Notes)
+	}
+}
+
+// Plain enter must still insert a newline, or multi-line comments are
+// impossible.
+func TestPlainEnterInsertsNewlineInComposer(t *testing.T) {
+	dir := t.TempDir()
+	path := dir + "/d.md"
+	if err := writeFile(path, "# T\n\nBody.\n"); err != nil {
+		t.Fatal(err)
+	}
+	m, store := newModel(t, path)
+	key(m, "c")
+	typeText(m, "first")
+	key(m, "enter")
+	typeText(m, "second")
+
+	if m.mode != ModeComment {
+		t.Fatal("plain enter closed the composer; multi-line comments would be impossible")
+	}
+	if got := m.composer.Value(); got != "first\nsecond" {
+		t.Errorf("composer value = %q, want two lines", got)
+	}
+	key(m, "alt+enter")
+	if len(store.Notes) != 1 || !strings.Contains(store.Notes[0].Body, "\n") {
+		t.Errorf("multi-line comment not preserved: %+v", store.Notes)
 	}
 }

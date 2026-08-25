@@ -48,6 +48,7 @@ their own source instead — the block stays reviewable either way.
 | `T` | table of contents |
 | `/`, then `n` / `N` | search, next, previous |
 | `c` | comment on the current block |
+| `⌥↵` or `ctrl+s` | save the comment being composed |
 | `e` | edit the selected comment |
 | `x` | delete the selected comment (asks first) |
 | `r` | toggle resolved |
@@ -56,6 +57,41 @@ their own source instead — the block stays reviewable either way.
 | `t` | show or hide resolved comments |
 | `R` | reload the document from disk |
 | `q` | quit |
+
+## Saving a comment with Cmd+Return
+
+The composer saves on `alt+return` or `ctrl+s`. Plain `return` inserts a
+newline, so comments can be multi-line.
+
+`cmd+return` needs one line of terminal config, for two reasons that are worth
+knowing before you fight it:
+
+1. macOS never delivers the Cmd (Super) modifier to a TTY. The only wire format
+   that can express it is the Kitty keyboard protocol, and Bubble Tea v1 does not
+   parse CSI-u sequences at all — enabling the protocol would break every other
+   key rather than add one.
+2. Ghostty binds `super+enter` to `toggle_fullscreen` by default, so the chord is
+   consumed before the TTY ever sees it.
+
+So the terminal has to translate the chord into something deliverable. In
+`~/.config/ghostty/config`:
+
+```
+keybind = super+enter=text:\x1b\x0d
+```
+
+That sends `ESC CR`, which is exactly what `alt+return` sends, and md-review
+already saves on it. Note this **replaces** ghostty's `super+enter` fullscreen
+toggle globally, and applies in every terminal app — that trade is yours to make.
+
+To confirm what actually arrives:
+
+```
+md-review --keys
+```
+
+Press the chord. `1b 0d` means it worked; nothing at all means the terminal is
+still swallowing it.
 
 ## How comments stay attached
 
@@ -82,6 +118,7 @@ Press `R` after editing the file elsewhere to re-anchor without restarting.
 -diagram-scale F            multiply diagram size (default 1.0)
 -read-only                  browse without allowing comment changes
 -selftest                   verify terminal graphics support
+-keys                       print raw bytes of each keypress
 -paths                      print binary and cache locations
 ```
 

@@ -104,7 +104,7 @@ func (m *Model) composerOverlay() []string {
 	}
 
 	head := styleAccent.Render(" " + verb + " " + target)
-	lines := []string{pad(head, styleDim.Render("ctrl+s save · esc cancel "), m.width)}
+	lines := []string{pad(head, styleDim.Render("⌥↵ / ctrl+s save · esc cancel "), m.width)}
 	lines = append(lines, strings.Split(m.composer.View(), "\n")...)
 	return fit(lines, m.composer.Height()+2)
 }
@@ -162,6 +162,7 @@ func helpBody(h, width int) []string {
 		}},
 		{"Review", []row{
 			{"c", "comment on the current block"},
+			{"⌥↵ / ctrl+s", "save the comment being composed"},
 			{"e", "edit the selected comment"},
 			{"x", "delete the selected comment"},
 			{"r", "toggle resolved"},

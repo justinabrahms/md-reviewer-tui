@@ -296,7 +296,11 @@ func (m *Model) updateComposer(k tea.KeyMsg) (tea.Model, tea.Cmd) {
 		m.note("cancelled")
 		m.scrollToCursor()
 		return m, nil
-	case "ctrl+s":
+	// alt+enter is the deliverable form of cmd+return: macOS never sends Super
+	// to the TTY, and Bubble Tea v1 cannot parse the Kitty keyboard protocol
+	// that would carry it. A terminal keybind mapping cmd+enter to ESC CR
+	// arrives here as alt+enter. See README.
+	case "ctrl+s", "alt+enter":
 		body := strings.TrimSpace(m.composer.Value())
 		if body == "" {
 			m.fail("empty comment discarded")

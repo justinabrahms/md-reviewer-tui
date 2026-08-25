@@ -35,6 +35,7 @@ func run() error {
 		install      = flag.Bool("install-mermaid", false, "install mermaid-cli into the cache directory and exit")
 		showPaths    = flag.Bool("paths", false, "print the mermaid binary and cache locations and exit")
 		doSelftest   = flag.Bool("selftest", false, "draw a test diagram inline to verify terminal graphics, then exit")
+		doKeys       = flag.Bool("keys", false, "print the raw bytes of each keypress, to check what the terminal delivers")
 	)
 	flag.Usage = usage
 	flag.Parse()
@@ -46,6 +47,10 @@ func run() error {
 		}
 		fmt.Println("installed mermaid-cli:", bin)
 		return nil
+	}
+
+	if *doKeys {
+		return dumpKeys()
 	}
 
 	if *doSelftest {
@@ -139,6 +144,7 @@ Usage:
   md-review [flags] FILE.md
   md-review --install-mermaid
   md-review --selftest
+  md-review --keys
 
 Comments are stored beside the document as FILE.review.json and saved
 automatically. Mermaid diagrams render as real images in terminals that

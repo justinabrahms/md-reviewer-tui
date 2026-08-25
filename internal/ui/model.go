@@ -101,7 +101,7 @@ type reloadedMsg struct {
 // New builds a Model for a parsed document.
 func New(cfg Config, d *doc.Document, store *annot.Store, kitty *render.Kitty, mer *mermaid.Renderer) *Model {
 	ta := textarea.New()
-	ta.Placeholder = "Your comment (markdown ok). ctrl+s saves, esc cancels."
+	ta.Placeholder = "Your comment (markdown ok). cmd/alt+return or ctrl+s saves, esc cancels."
 	ta.ShowLineNumbers = false
 	ta.CharLimit = 0
 	ta.SetHeight(5)
