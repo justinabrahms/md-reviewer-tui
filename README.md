@@ -3,6 +3,8 @@
 A terminal reviewer for markdown documents: styled prose, real mermaid diagrams
 rendered as images, and comments anchored to what you were reading.
 
+<img width="848" height="660" alt="Screenshot 2026-08-26 at 10 51 58" src="https://github.com/user-attachments/assets/1707d1fa-b419-4c22-98a9-2d7a236cf031" />
+
 ```
 md-review design.md
 ```
